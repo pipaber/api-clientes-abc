@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    container_name: api-clientes-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=utec
+      - POSTGRES_DB=api_clientes
+
+  api:
+    build: .
+    container_name: api-clientes-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://root:utec@db/api_clientes
+
+  adminer:
+    image: adminer
+    container_name: api-clientes-adminer
+    restart: always
+    ports:
+      - "8080:8080"   # exposes Adminer UI on localhost:8080
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
