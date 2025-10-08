@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=utec
+      - POSTGRES_DB=api_clientes
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d api_clientes"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"        # recommend aligning host/container
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root:utec@db/api_clientes
+
+volumes:
+  postgres_data:
